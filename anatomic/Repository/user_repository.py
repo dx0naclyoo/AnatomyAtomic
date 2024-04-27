@@ -23,4 +23,3 @@ class UserRepository(BaseRepository):
 
     def delete_user(self, user_id):
         pass
-

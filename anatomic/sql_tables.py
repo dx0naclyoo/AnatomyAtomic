@@ -1,7 +1,7 @@
 from typing import List
 
-from sqlalchemy import DeclarativeBase, Integer, String, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import Integer, String, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship, DeclarativeBase
 
 
 class Base(DeclarativeBase):
@@ -9,7 +9,7 @@ class Base(DeclarativeBase):
 
 
 class User(Base):
-    __tablename__ = 'user'
+    __tablename__ = "user"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     username: Mapped[str] = mapped_column(String)
@@ -19,12 +19,12 @@ class User(Base):
 
 
 class Section(Base):  # Разделы
-    __tablename__ ='section'
+    __tablename__ = "section"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String)
     topic_list: Mapped[List["Topic"]] = relationship("Topic", back_populates="section")
-    keywords: Mapped[str] = mapped_column(String, default="")
+    keywords: Mapped[str] = mapped_column(String, default=" ")
 
 
 class Topic(Base):  # Темы
@@ -35,6 +35,6 @@ class Topic(Base):  # Темы
     content: Mapped[str] = mapped_column(String)
 
     section: Mapped[Section] = relationship("Section", back_populates="topic_list")
-    section_id: Mapped[int] = mapped_column(Integer, ForeignKey("section"))
+    section_id: Mapped[int] = mapped_column(Integer, ForeignKey("section.id"))
 
     keywords: Mapped[str] = mapped_column(String, default="")

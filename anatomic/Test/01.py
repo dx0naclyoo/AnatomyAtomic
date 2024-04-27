@@ -1,5 +1,3 @@
-
-
 class Postgresql:
     @classmethod
     def get_session(cls):
