@@ -11,11 +11,14 @@ class Base(DeclarativeBase):
 class User(Base):
     __tablename__ = "user"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     username: Mapped[str] = mapped_column(String)
     email: Mapped[str] = mapped_column(String)
     password: Mapped[str] = mapped_column(String)
-    progress: Mapped[list] = mapped_column(String)
+    progress: Mapped[list] = mapped_column(String, nullable=True)
+
+    def __str__(self) -> str:
+        return f"User( {self.id} {self.username} {self.email} {self.progress} )"
 
 
 class Section(Base):  # Разделы
@@ -25,6 +28,9 @@ class Section(Base):  # Разделы
     name: Mapped[str] = mapped_column(String)
     topic_list: Mapped[List["Topic"]] = relationship("Topic", back_populates="section")
     keywords: Mapped[str] = mapped_column(String, default=" ")
+
+    def __str__(self) -> str:
+        return f"Section( {self.id} {self.name} {self.topic_list} {self.keywords} )"
 
 
 class Topic(Base):  # Темы
@@ -38,3 +44,6 @@ class Topic(Base):  # Темы
     section_id: Mapped[int] = mapped_column(Integer, ForeignKey("section.id"))
 
     keywords: Mapped[str] = mapped_column(String, default="")
+
+    def __str__(self) -> str:
+        return f"Topic( {self.id} {self.name} {self.content} {self.section_id} {self.keywords} )"

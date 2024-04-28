@@ -1,52 +1,31 @@
+import asyncio
 from abc import ABC, abstractmethod
+
+from fastapi import Depends
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+
+from anatomic.settings import settings
 
 
 class DatabaseSQL(ABC):
-    @classmethod
-    @abstractmethod
-    def get_session(cls):
-        pass
 
     @abstractmethod
-    def get(self, table, item_id):
-        pass
-
-    @abstractmethod
-    def get_all(self, table):
-        pass
-
-    @abstractmethod
-    def add(self, table, item):
-        pass
-
-    @abstractmethod
-    def update(self, table, item_id, item):
-        pass
-
-    @abstractmethod
-    def delete(self, table, item_id):
+    async def get_session(self) -> AsyncSession:
         pass
 
 
 class Postgresql(DatabaseSQL):
-    def __init__(self):
-        pass
+    def __init__(self, url: str, echo: bool = False) -> None:
+        self.engine = create_async_engine(url, echo=echo)
+        self.session_factory = async_sessionmaker(
+            bind=self.engine, autoflush=False, autocommit=False, expire_on_commit=False
+        )
 
-    @classmethod
-    def get_session(cls):
-        pass
+    async def get_session(self) -> AsyncSession:
+        async with self.session_factory() as session:
+            yield session
 
-    def get(self, table, item_id):
-        pass
 
-    def get_all(self, table):
-        pass
+postgresql = Postgresql(url=settings.database.url, echo=settings.database.echo)
 
-    def add(self, table, item):
-        pass
 
-    def update(self, table, item_id, item):
-        pass
-
-    def delete(self, table, item_id):
-        pass

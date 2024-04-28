@@ -14,6 +14,8 @@ pydantic = "^2.7.1"
 python-dotenv = "^1.0.1"
 asyncpg = "^0.29.0"
 pydantic-settings = "^2.2.1"
+redis = "^5.0.4"
+black = "^24.4.2"
 
 
 [build-system]
