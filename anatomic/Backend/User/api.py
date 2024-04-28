@@ -7,7 +7,7 @@ router = APIRouter(tags=["User"], prefix="/user")
 
 
 @router.get("/{user_id}")
-async def get_user_by_id(
+async def get_by_id(
         user_id: int,
         service: UserService = Depends(UserService)
 ):

@@ -15,7 +15,7 @@ class UserRepository(BaseRepository):
         self.table = sql_tables.User
         self.session: AsyncSession = session
 
-    async def get_user_by_id(self, user_id) -> sql_tables.User:
+    async def get_by_id(self, user_id) -> sql_tables.User:
         stmt = select(self.table).where(self.table == user_id)
         response = await self.session.execute(stmt)
         if user := response.scalar():
@@ -23,17 +23,17 @@ class UserRepository(BaseRepository):
         else:
             return sql_tables.User()
 
-    async def get_all_users(self):
+    async def get_all(self):
         pass
 
-    async def add_user(self, user: sql_tables.User):
+    async def create(self, user: sql_tables.User):
 
         self.session.add(user)
         await self.session.commit()
         return user
 
-    async def update_user(self, user):
+    async def update(self, user):
         pass
 
-    async def delete_user(self, user_id):
+    async def delete(self, user_id):
         pass

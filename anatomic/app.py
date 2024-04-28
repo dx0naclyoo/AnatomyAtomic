@@ -9,5 +9,6 @@ app.include_router(router)
 @app.get("/")
 def read_root(request: Request):
     domain = request.headers.get("Host")
-    print(request.headers)
+    for head, value in request.headers.items():
+        print(head, value)
     return f"API docs - https://{domain}/docs"

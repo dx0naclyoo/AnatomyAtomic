@@ -15,13 +15,13 @@ class UserService:
         pass
 
     async def get_user(self, user_id):
-        return await self.user_repository.get_user_by_id(user_id)
+        return await self.user_repository.get_by_id(user_id)
 
     async def get_all_users(self):
-        return await self.user_repository.get_all_users()
+        return await self.user_repository.get_all()
 
     async def add_user(self, user: model.UserRegister):
 
         sql_user = sql_tables.User(**user.dict())
 
-        return await self.user_repository.add_user(sql_user)
+        return await self.user_repository.create(sql_user)
