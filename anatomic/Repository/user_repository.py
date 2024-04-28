@@ -16,7 +16,7 @@ class UserRepository(BaseRepository):
         self.session: AsyncSession = session
 
     async def get_by_id(self, user_id) -> sql_tables.User:
-        stmt = select(self.table).where(self.table == user_id)
+        stmt = select(self.table).where(self.table.id == user_id)
         response = await self.session.execute(stmt)
         if user := response.scalar():
             return user
