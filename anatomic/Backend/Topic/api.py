@@ -2,48 +2,44 @@ from fastapi import APIRouter, Depends
 
 from anatomic.Backend.Topic import model
 from anatomic.Backend.Topic.service import TopicService
+from anatomic.tools import SortedMode
 
 router = APIRouter(tags=["Topic"], prefix="/topic")
 
 
 @router.get("/{topic_id}")
-async def get_topic_by_id(
-        topic_id: int,
-        service: TopicService = Depends(TopicService)
-):
+async def get_topic_by_id(topic_id: int, service: TopicService = Depends(TopicService)):
     return await service.get_topic_by_id(topic_id)
 
 
 @router.get("/all/")
 async def get_all_topic(
-        limit: int = 10,
-        offset: int = 0,
-        sorted_mode: bool = True,
-        service: TopicService = Depends(TopicService)
+    limit: int = 10,
+    offset: int = 0,
+    sorted_mode: SortedMode = SortedMode.ID,
+    service: TopicService = Depends(TopicService),
 ):
-    return await service.get_all_topics()
+    return await service.get_all_topics(
+        limit=limit, offset=offset, sorted_mode=sorted_mode
+    )
 
 
 @router.post("/create")
 async def create_topic(
-        topic: model.TopicCreate,
-        service: TopicService = Depends(TopicService)
+    topic: model.TopicCreate, service: TopicService = Depends(TopicService)
 ):
     return await service.create(topic)
 
 
 @router.put("/{topic_id}/update")
 async def update_topic(
-        topic_id: int,
-        topic: model.Topic,
-        service: TopicService = Depends(TopicService)
+    topic_id: int,
+    topic: model.TopicUpdate,
+    service: TopicService = Depends(TopicService),
 ):
-    pass
+    return await service.update(topic_id, topic)
 
 
 @router.delete("/{topic_id}/delete")
-async def delete_section(
-        topic_id: int,
-        service: TopicService = Depends(TopicService)
-):
-    pass
+async def delete_section(topic_id: int, service: TopicService = Depends(TopicService)):
+    return await service.delete(topic_id)

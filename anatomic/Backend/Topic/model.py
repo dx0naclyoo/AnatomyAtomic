@@ -7,6 +7,8 @@ class TopicBase(BaseModel):
     name: str
     content: str
     keywords: List[str] = []
+    content: str
+    section_id: int
 
 
 class Topic(TopicBase):
@@ -14,5 +16,8 @@ class Topic(TopicBase):
 
 
 class TopicCreate(TopicBase):
-    content: str
-    section_id: int
+    pass
+
+
+class TopicUpdate(TopicBase):
+    pass

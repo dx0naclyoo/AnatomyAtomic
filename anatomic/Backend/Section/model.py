@@ -17,4 +17,3 @@ class Section(SectionBase):
 
 class SectionCreate(SectionBase):
     pass
-
