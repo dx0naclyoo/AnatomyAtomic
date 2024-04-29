@@ -15,7 +15,7 @@ async def get_section_by_id(
 
 
 @router.get(
-    "/all/",
+    "/all",
     description="""
     CRUD Операция - получение всех Секций из БД. 
     limit - Число записей, что вернётся, max = 100.
@@ -37,14 +37,14 @@ async def get_all_section(
     )
 
 
-@router.post("/create")
+@router.post("/")
 async def create_section(
         section: model.SectionCreate, service: SectionService = Depends(SectionService)
 ):
     return await service.create_section(section)
 
 
-@router.put("/{section_id}/update")
+@router.put("/{section_id}")
 async def update_section(
         section_id: int,
         section: model.SectionUpdate,
@@ -53,7 +53,7 @@ async def update_section(
     return await service.update_section(section_id, section)
 
 
-@router.delete("/{section_id}/delete")
+@router.delete("/{section_id}")
 async def delete_section(
         section_id: int, service: SectionService = Depends(SectionService)
 ):
