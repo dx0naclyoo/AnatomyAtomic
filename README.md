@@ -1,7 +1,7 @@
 
 API Для Сайта по Изучению и Практики Анатомии
 
-API Docs(https://anatomyatomic.onrender.com/)
+API Docs - https://anatomyatomic.onrender.com/
 
 Site - ""
 
