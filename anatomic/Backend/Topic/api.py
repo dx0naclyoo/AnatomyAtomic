@@ -8,14 +8,19 @@ from anatomic.tools import SortedMode
 router = APIRouter(tags=["Topic"], prefix="/topics")
 
 
-@router.get("/{slug}")
-async def get_topic_by_slug(slug: str, service: TopicService = Depends(TopicService)):
-    return await service.get_topic_by_slug(slug)
+@router.get("/{identifier}")
+async def get_topic_by_identifier(identifier: str, service: TopicService = Depends(TopicService)):
+
+    if identifier.isdigit():
+        print("int")
+        return await service.get_topic_by_id(int(identifier))
+    else:
+        return await service.get_topic_by_slug(identifier)
 
 
-@router.get("/{topic_id}")
-async def get_topic_by_id(topic_id: int, service: TopicService = Depends(TopicService)):
-    return await service.get_topic_by_id(topic_id)
+# @router.get("/{topic_id}")
+# async def get_topic_by_id(topic_id: int, service: TopicService = Depends(TopicService)):
+#     return await service.get_topic_by_id(topic_id)
 
 
 @router.get("/")

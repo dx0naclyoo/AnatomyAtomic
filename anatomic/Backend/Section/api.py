@@ -5,24 +5,26 @@ from anatomic.Backend.Section import model
 from anatomic.Backend.Section.service import SectionService
 from anatomic.tools import SortedMode
 
-
 router = APIRouter(tags=["Section"], prefix="/sections")
 
 
-@router.get("/{slug}")
-async def get_section_by_slug(
-    slug: str, service: SectionService = Depends(SectionService)
+@router.get("/{identifier}")
+async def get_section_by_identifier(
+        identifier: str, service: SectionService = Depends(SectionService)
 ):
-    return await service.get_section_by_slug(slug)
+
+    if identifier.isdigit():
+        print("int")
+        return await service.get_section_by_id(int(identifier))
+    else:
+        return await service.get_section_by_slug(identifier)
 
 
-@router.get(
-    "/{section_id}", response_model=model.Section, name="section:get_by_id"
-)
-async def get_section_by_id(
-    section_id: int, service: SectionService = Depends(SectionService)
-):
-    return await service.get_section_by_id(section_id)
+# @router.get("/{id}", response_model=model.Section, name="section:get_by_id")
+# async def get_section_by_id(
+#         section_id: int, service: SectionService = Depends(SectionService)
+# ):
+#     return await service.get_section_by_id(section_id)
 
 
 @router.get(
@@ -35,11 +37,11 @@ async def get_section_by_id(
     """,
 )
 async def get_all_section(
-    request: Request,
-    limit: int = 10,
-    offset: int = 0,
-    sorted_mode: SortedMode = SortedMode.ID,
-    service: SectionService = Depends(SectionService),
+        request: Request,
+        limit: int = 10,
+        offset: int = 0,
+        sorted_mode: SortedMode = SortedMode.ID,
+        service: SectionService = Depends(SectionService),
 ):
     if limit > 100:
         limit = 100
@@ -50,9 +52,8 @@ async def get_all_section(
 
 @router.post("/")
 async def create_section(
-    section: model.SectionCreate, service: SectionService = Depends(SectionService)
+        section: model.SectionCreate, service: SectionService = Depends(SectionService)
 ):
-
     section.slug = slugify(section.name)
 
     return await service.create_section(section)
@@ -60,15 +61,15 @@ async def create_section(
 
 @router.put("/{section_id}")
 async def update_section(
-    section_id: int,
-    section: model.SectionUpdate,
-    service: SectionService = Depends(SectionService),
+        section_id: int,
+        section: model.SectionUpdate,
+        service: SectionService = Depends(SectionService),
 ):
     return await service.update_section(section_id, section)
 
 
 @router.delete("/{section_id}")
 async def delete_section(
-    section_id: int, service: SectionService = Depends(SectionService)
+        section_id: int, service: SectionService = Depends(SectionService)
 ):
     return await service.delete_section(section_id)
