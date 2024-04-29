@@ -1,10 +1,19 @@
 from fastapi import APIRouter, Depends, Request
+from slugify import slugify
 
 from anatomic.Backend.Section import model
 from anatomic.Backend.Section.service import SectionService
 from anatomic.tools import SortedMode
 
+
 router = APIRouter(tags=["Section"], prefix="/sections")
+
+
+@router.get("/{slug}")
+async def get_section_by_slug(
+    slug: str, service: SectionService = Depends(SectionService)
+):
+    return await service.get_section_by_slug(slug)
 
 
 @router.get(
@@ -43,6 +52,9 @@ async def get_all_section(
 async def create_section(
     section: model.SectionCreate, service: SectionService = Depends(SectionService)
 ):
+
+    section.slug = slugify(section.name)
+
     return await service.create_section(section)
 
 

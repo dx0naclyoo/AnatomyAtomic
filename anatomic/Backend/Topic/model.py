@@ -7,8 +7,8 @@ class TopicBase(BaseModel):
     name: str
     content: str
     keywords: List[str] = []
-    content: str
     section_id: int
+    slug: str
 
 
 class Topic(TopicBase):

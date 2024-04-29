@@ -15,6 +15,19 @@ class SectionRepository(BaseRepository):
         self.table = sql_tables.Section
         self.session: AsyncSession = session
 
+    async def get_by_slug(self, slug):
+        sql = select(self.table).where(self.table.slug == slug)
+
+        result = await self.session.execute(sql)
+        section = result.scalar()
+
+        if section:
+            return section
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Section not found"
+            )
+
     async def get(self, section_id):
         sql = select(self.table).where(self.table.id == section_id)
 

@@ -17,6 +17,16 @@ class TopicRepository(BaseRepository):
         self.table = sql_tables.Topic
         self.session: AsyncSession = session
 
+    async def get_by_slug(self, slug):
+        sql = select(self.table).where(self.table.slug == slug)
+        response = await self.session.execute(sql)
+        if topic := response.scalar():
+            return topic
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Topic not found"
+            )
+
     async def get(self, topic_id):
         sql = select(self.table).where(self.table.id == topic_id)
         response = await self.session.execute(sql)

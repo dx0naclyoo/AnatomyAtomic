@@ -1,8 +1,7 @@
-from anatomic import sql_tables
-from anatomic.Backend.User import model
+
+from slugify import slugify
 
 
-asd = model.UserRegister(username="Sanya", email="sanya@gmail.com", password="12345")
-
-new_user = sql_tables.User(**asd.dict())
-print(new_user)
+txt = 'Компьютер по низким ценам'
+r = slugify(txt)
+print(r, type(r))

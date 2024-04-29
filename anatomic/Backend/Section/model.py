@@ -8,6 +8,8 @@ from anatomic.Backend.Topic import model
 class SectionBase(BaseModel):
     name: str
     keywords: List[str] = []
+    description: str
+    slug: str
 
 
 class Section(SectionBase):

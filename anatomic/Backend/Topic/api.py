@@ -1,10 +1,16 @@
 from fastapi import APIRouter, Depends
+from slugify import slugify
 
 from anatomic.Backend.Topic import model
 from anatomic.Backend.Topic.service import TopicService
 from anatomic.tools import SortedMode
 
 router = APIRouter(tags=["Topic"], prefix="/topics")
+
+
+@router.get("/{slug}")
+async def get_topic_by_slug(slug: str, service: TopicService = Depends(TopicService)):
+    return await service.get_topic_by_slug(slug)
 
 
 @router.get("/{topic_id}")
@@ -35,6 +41,8 @@ async def get_all_topic(
 async def create_topic(
     topic: model.TopicCreate, service: TopicService = Depends(TopicService)
 ):
+    topic.slug = slugify(topic.name)
+
     return await service.create(topic)
 
 

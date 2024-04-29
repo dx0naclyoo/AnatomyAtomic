@@ -10,6 +10,9 @@ class SectionService:
     ):
         self.section_repository = section_repository
 
+    async def get_section_by_slug(self, slug):
+        return await self.section_repository.get_by_slug(slug)
+
     async def get_section_by_id(self, section_id):
         return await self.section_repository.get(section_id)
 
