@@ -26,7 +26,12 @@ class Section(Base):  # Разделы
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String)
-    topic_list: Mapped[List["Topic"]] = relationship("Topic", back_populates="section")
+    topic_list: Mapped[List["Topic"]] = relationship(
+        "Topic",
+        back_populates="section",
+        cascade="save-update, merge, delete",
+        passive_deletes=True,
+    )
     keywords: Mapped[list] = mapped_column(ARRAY(String))
 
     def __str__(self) -> str:
@@ -41,7 +46,9 @@ class Topic(Base):  # Темы
     content: Mapped[str] = mapped_column(String)
 
     section: Mapped[Section] = relationship("Section", back_populates="topic_list")
-    section_id: Mapped[int] = mapped_column(Integer, ForeignKey("section.id"))
+    section_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("section.id", ondelete="CASCADE")
+    )
 
     keywords: Mapped[list] = mapped_column(ARRAY(String))
 

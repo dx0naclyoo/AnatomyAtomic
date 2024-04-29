@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from fastapi import Request
 from anatomic.Backend import router
 
@@ -7,8 +7,11 @@ app.include_router(router)
 
 
 @app.get("/")
-def read_root(request: Request):
+def read_root(request: Request, response: Response):
     domain = request.headers.get("Host")
-    for head, value in request.headers.items():
-        print(head, value)
-    return f"API docs - https://{domain}/docs"
+    response.set_cookie(key="Custom_Cookies_Test", value="new_value")
+    return {
+        "API docs": f"https://{domain}/docs/",
+        "Headers": request.headers,
+        "Cookies": request.cookies,
+    }

@@ -7,13 +7,16 @@ from anatomic.Backend.Topic import model
 
 class SectionBase(BaseModel):
     name: str
+    keywords: List[str] = []
 
 
 class Section(SectionBase):
     id: int
-    topic_list: List["model.Topic"] = []
-    keywords: List[str] = []
 
 
 class SectionCreate(SectionBase):
+    pass
+
+
+class SectionUpdate(SectionBase):
     pass

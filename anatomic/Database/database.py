@@ -27,3 +27,6 @@ class Postgresql(DatabaseSQL):
 
 
 postgresql = Postgresql(url=settings.database.url, echo=settings.database.echo)
+
+
+class Redis: ...

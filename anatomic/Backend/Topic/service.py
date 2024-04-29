@@ -13,12 +13,13 @@ class TopicService:
 
     async def get_all_topics(
         self,
+        section_id: int = None,
         limit: int = 10,
         offset: int = 0,
         sorted_mode: SortedMode = SortedMode.ID,
     ):
         return await self.topic_repository.get_all(
-            limit=limit, offset=offset, sorted_mode=sorted_mode
+            limit=limit, offset=offset, sorted_mode=sorted_mode, section_id=section_id
         )
 
     async def create(self, topic):

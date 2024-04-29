@@ -17,10 +17,17 @@ async def get_all_topic(
     limit: int = 10,
     offset: int = 0,
     sorted_mode: SortedMode = SortedMode.ID,
+    section_id: int = None,
     service: TopicService = Depends(TopicService),
 ):
+    if limit > 100:
+        limit = 100
+
     return await service.get_all_topics(
-        limit=limit, offset=offset, sorted_mode=sorted_mode
+        limit=limit,
+        offset=offset,
+        sorted_mode=sorted_mode,
+        section_id=section_id,
     )
 
 
@@ -31,7 +38,7 @@ async def create_topic(
     return await service.create(topic)
 
 
-@router.put("/{topic_id}/update")
+@router.put("/{topic_id}/update/")
 async def update_topic(
     topic_id: int,
     topic: model.TopicUpdate,
@@ -40,6 +47,6 @@ async def update_topic(
     return await service.update(topic_id, topic)
 
 
-@router.delete("/{topic_id}/delete")
-async def delete_section(topic_id: int, service: TopicService = Depends(TopicService)):
+@router.delete("/{topic_id}/delete/")
+async def delete_topic(topic_id: int, service: TopicService = Depends(TopicService)):
     return await service.delete(topic_id)
