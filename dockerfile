@@ -13,4 +13,4 @@ RUN poetry install --no-root --no-interaction --no-ansi
 
 COPY . .
 
-CMD uvicorn src.backend.app:app --reload --host 0.0.0.0 --port 8000
+CMD uvicorn anatomic.app:app --reload --host 0.0.0.0 --port 8000
