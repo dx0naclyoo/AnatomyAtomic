@@ -10,7 +10,7 @@ router = APIRouter(tags=["Section"], prefix="/sections")
 
 @router.get("/{identifier}")
 async def get_section_by_identifier(
-        identifier: str, service: SectionService = Depends(SectionService)
+    identifier: str, service: SectionService = Depends(SectionService)
 ):
 
     if identifier.isdigit():
@@ -37,11 +37,11 @@ async def get_section_by_identifier(
     """,
 )
 async def get_all_section(
-        request: Request,
-        limit: int = 10,
-        offset: int = 0,
-        sorted_mode: SortedMode = SortedMode.ID,
-        service: SectionService = Depends(SectionService),
+    request: Request,
+    limit: int = 10,
+    offset: int = 0,
+    sorted_mode: SortedMode = SortedMode.ID,
+    service: SectionService = Depends(SectionService),
 ):
     if limit > 100:
         limit = 100
@@ -52,7 +52,7 @@ async def get_all_section(
 
 @router.post("/")
 async def create_section(
-        section: model.SectionCreate, service: SectionService = Depends(SectionService)
+    section: model.SectionCreate, service: SectionService = Depends(SectionService)
 ):
     section.slug = slugify(section.name)
 
@@ -61,15 +61,15 @@ async def create_section(
 
 @router.put("/{section_id}")
 async def update_section(
-        section_id: int,
-        section: model.SectionUpdate,
-        service: SectionService = Depends(SectionService),
+    section_id: int,
+    section: model.SectionUpdate,
+    service: SectionService = Depends(SectionService),
 ):
     return await service.update_section(section_id, section)
 
 
 @router.delete("/{section_id}")
 async def delete_section(
-        section_id: int, service: SectionService = Depends(SectionService)
+    section_id: int, service: SectionService = Depends(SectionService)
 ):
     return await service.delete_section(section_id)

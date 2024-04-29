@@ -1,7 +1,7 @@
 import asyncio
 from abc import ABC, abstractmethod
 
-from fastapi import Depends
+import redis
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 
 from anatomic.settings import settings
@@ -26,7 +26,28 @@ class Postgresql(DatabaseSQL):
             yield session
 
 
-postgresql = Postgresql(url=settings.database.url, echo=settings.database.echo)
+postgresql = Postgresql(url=settings.database.postgres_url, echo=settings.database.echo)
 
 
-class Redis: ...
+class RedisTools:
+    __redis = redis.from_url(settings.database.redis_url)
+    default_expire = settings.database.redis_default_expire
+
+    @classmethod
+    def set(cls, key: str, value: str):
+        cls.__redis.set(key, value)
+        cls.expire(key, cls.default_expire)
+
+    @classmethod
+    def get(cls, key: str) -> str:
+        item: bytes = cls.__redis.get(key)
+        if item:
+            return item.decode("utf-8")
+
+    @classmethod
+    def get_keys(cls):
+        return cls.__redis.keys(pattern="*")
+
+    @classmethod
+    def expire(cls, key: str, seconds: int) -> None:
+        cls.__redis.expire(key, seconds)

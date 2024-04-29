@@ -7,8 +7,10 @@ load_dotenv()
 
 
 class DatabaseSettings(BaseSettings):
-    url: str = os.getenv("POSTGRESQL_URL")
+    postgres_url: str = os.getenv("POSTGRESQL_URL")
     echo: bool = False
+    redis_url: str = os.getenv("REDIS_URL")
+    redis_default_expire: int = 3600
 
 
 class AppSettings(BaseSettings):

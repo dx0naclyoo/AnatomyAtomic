@@ -9,7 +9,9 @@ router = APIRouter(tags=["Topic"], prefix="/topics")
 
 
 @router.get("/{identifier}")
-async def get_topic_by_identifier(identifier: str, service: TopicService = Depends(TopicService)):
+async def get_topic_by_identifier(
+    identifier: str, service: TopicService = Depends(TopicService)
+):
 
     if identifier.isdigit():
         print("int")
