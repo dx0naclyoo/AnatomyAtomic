@@ -17,7 +17,7 @@ async def get_section_by_id(
 
 
 @router.get(
-    "/sections/all",
+    "/sections",
     description="""
     CRUD Операция - получение всех Секций из БД. 
     limit - Число записей, что вернётся, max = 100.

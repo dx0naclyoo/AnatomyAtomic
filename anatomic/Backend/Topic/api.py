@@ -12,7 +12,7 @@ async def get_topic_by_id(topic_id: int, service: TopicService = Depends(TopicSe
     return await service.get_topic_by_id(topic_id)
 
 
-@router.get("/topics/all")
+@router.get("/topics")
 async def get_all_topic(
     limit: int = 10,
     offset: int = 0,
