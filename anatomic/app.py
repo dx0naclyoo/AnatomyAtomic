@@ -5,10 +5,10 @@ from fastapi.routing import APIRoute
 
 from starlette.middleware.cors import CORSMiddleware
 
-from anatomic.Backend import router
+from anatomic.Backend import router as api_v1
 
 app = FastAPI()
-app.include_router(router)
+app.include_router(api_v1)
 
 
 # Handle CORS
