@@ -4,10 +4,10 @@ from anatomic.Backend.Section import model
 from anatomic.Backend.Section.service import SectionService
 from anatomic.tools import SortedMode
 
-router = APIRouter(tags=["Section"], prefix="/section")
+router = APIRouter(tags=["Section"])
 
 
-@router.get("/{section_id}", response_model=model.Section, name="section:get_by_id")
+@router.get("/sections/{section_id}", response_model=model.Section, name="section:get_by_id")
 async def get_section_by_id(
         section_id: int, service: SectionService = Depends(SectionService)
 ):
@@ -15,7 +15,7 @@ async def get_section_by_id(
 
 
 @router.get(
-    "/all",
+    "/sections/all",
     description="""
     CRUD Операция - получение всех Секций из БД. 
     limit - Число записей, что вернётся, max = 100.
@@ -37,14 +37,14 @@ async def get_all_section(
     )
 
 
-@router.post("/")
+@router.post("/section/")
 async def create_section(
         section: model.SectionCreate, service: SectionService = Depends(SectionService)
 ):
     return await service.create_section(section)
 
 
-@router.put("/{section_id}")
+@router.put("/section/{section_id}")
 async def update_section(
         section_id: int,
         section: model.SectionUpdate,
@@ -53,7 +53,7 @@ async def update_section(
     return await service.update_section(section_id, section)
 
 
-@router.delete("/{section_id}")
+@router.delete("/section/{section_id}")
 async def delete_section(
         section_id: int, service: SectionService = Depends(SectionService)
 ):

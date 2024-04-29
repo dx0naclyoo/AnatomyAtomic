@@ -4,15 +4,15 @@ from anatomic.Backend.Topic import model
 from anatomic.Backend.Topic.service import TopicService
 from anatomic.tools import SortedMode
 
-router = APIRouter(tags=["Topic"], prefix="/topic")
+router = APIRouter(tags=["Topic"])
 
 
-@router.get("/{topic_id}")
+@router.get("/topics/{topic_id}")
 async def get_topic_by_id(topic_id: int, service: TopicService = Depends(TopicService)):
     return await service.get_topic_by_id(topic_id)
 
 
-@router.get("/all")
+@router.get("/topics/all")
 async def get_all_topic(
     limit: int = 10,
     offset: int = 0,
@@ -31,14 +31,14 @@ async def get_all_topic(
     )
 
 
-@router.post("/")
+@router.post("/topic/")
 async def create_topic(
     topic: model.TopicCreate, service: TopicService = Depends(TopicService)
 ):
     return await service.create(topic)
 
 
-@router.put("/{topic_id}")
+@router.put("/topic/{topic_id}")
 async def update_topic(
     topic_id: int,
     topic: model.TopicUpdate,
@@ -47,6 +47,6 @@ async def update_topic(
     return await service.update(topic_id, topic)
 
 
-@router.delete("/{topic_id}")
+@router.delete("/topic/{topic_id}")
 async def delete_topic(topic_id: int, service: TopicService = Depends(TopicService)):
     return await service.delete(topic_id)
