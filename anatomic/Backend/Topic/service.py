@@ -40,9 +40,7 @@ class TopicService:
         if topics:
             return topics
         else:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Topics not found"
-            )
+            return []
 
     async def create(self, topic):
         return await self.topic_repository.create(topic)
