@@ -14,7 +14,6 @@ async def get_section_by_identifier(
 ):
 
     if identifier.isdigit():
-        print("int")
         return await service.get_section_by_id(int(identifier))
     else:
         return await service.get_section_by_slug(identifier)

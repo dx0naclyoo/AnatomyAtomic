@@ -1,9 +1,12 @@
 from slugify import slugify
 from anatomic.Backend.Topic import model
+from anatomic import sql_tables
 
-random_dict = '{"id": 1, "name": "string", "content": "string", "section_id": 1, "keywords": [], "slug": "string"}'
-print(random_dict)
-print(model.Topic.parse_raw(random_dict))
+from anatomic.Backend.Section import model
+
+asd = model.Section.parse_raw('{"id": 1, "name": string, "description": string, "keywords": [], "slug": string}')
+print(asd)
+
 # id: int
 # name: str
 # content: str

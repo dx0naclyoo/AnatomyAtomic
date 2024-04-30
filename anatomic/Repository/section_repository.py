@@ -1,13 +1,12 @@
-from fastapi import Depends, HTTPException, status
-from fastapi.exceptions import ResponseValidationError
+from fastapi import Depends
 from sqlalchemy import select
-from sqlalchemy.exc import MissingGreenlet
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from anatomic.Database.database import postgresql, DatabaseSQL
-from anatomic.Repository.base import BaseRepository
 from anatomic import sql_tables
+from anatomic.Database.database import postgresql, RedisTools
+from anatomic.Repository.base import BaseRepository
 from anatomic.tools import SortedMode, convert_pydantic_to_sql, is_sql_table
+from anatomic.Backend.Section import model
 
 
 class SectionRepository(BaseRepository):
@@ -16,43 +15,44 @@ class SectionRepository(BaseRepository):
         self.session: AsyncSession = session
 
     async def get_by_slug(self, slug):
-        sql = select(self.table).where(self.table.slug == slug)
 
-        result = await self.session.execute(sql)
-        section = result.scalar()
-
-        if section:
-            return section
+        if str(slug) in [s.decode() for s in RedisTools.get_keys()]:
+            print("by Slug REDIS")
+            section = RedisTools.get(str(slug))
+            return model.Section.parse_raw("{" + section + "}")
         else:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Section not found"
-            )
+            sql = select(self.table).where(self.table.slug == slug)
+            result = await self.session.execute(sql)
+            section = result.scalar()
+
+            if section:
+                print("by Slug Postgresql")
+                RedisTools.set(str(slug), str(section.__repr__()))
+                return section
 
     async def get(self, section_id):
-        sql = select(self.table).where(self.table.id == section_id)
 
-        result = await self.session.execute(sql)
-        section = result.scalar()
-
-        if section:
-            return section
+        if str(section_id) in [s.decode() for s in RedisTools.get_keys()]:
+            print("by ID REDIS")
+            section = RedisTools.get(str(section_id))
+            return model.Section.parse_raw("{" + section + "}")
         else:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Section not found"
-            )
+            print("by ID Postgresql")
+            sql = select(self.table).where(self.table.id == section_id)
+            print("1")
+            result = await self.session.execute(sql)
+            if section := result.scalar():
+                RedisTools.set(str(section_id), str(section.__repr__()))
+                return section
 
     async def get_all(
-        self, limit: int = 10, offset: int = 0, sorted_mode: SortedMode = SortedMode.ID
+            self, limit: int = 10, offset: int = 0, sorted_mode: SortedMode = SortedMode.ID
     ):
         sql = select(self.table).limit(limit).offset(offset)
         result = await self.session.execute(sql)
         sections = result.scalars().all()
         if sections:
             return sections
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Sections not found"
-            )
 
     async def create(self, section):
         if is_sql_table(section, self.table):
@@ -60,10 +60,12 @@ class SectionRepository(BaseRepository):
         else:
             sql_section = convert_pydantic_to_sql(section, self.table)
 
-        self.session.add(sql_section)
-        await self.session.commit()
-        await self.session.refresh(sql_section)
-        return sql_section
+        _check = await self.get_by_slug(sql_section.slug)
+        if not _check:
+            self.session.add(sql_section)
+            await self.session.commit()
+            await self.session.refresh(sql_section)
+            return sql_section
 
     async def update(self, section_id, section):
         old_section = await self.get(section_id)

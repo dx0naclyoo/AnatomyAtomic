@@ -21,7 +21,7 @@ class User(Base):
         return f"{self.id=}, {self.username=}, {self.email=}, {self.progress=}"
 
     def __repr__(self):
-        return f'{"id": self.id, "username": self.username, "email": self.email, "progress": self.progress}'
+        return f'"id": {self.id}, "username": {self.username}, "email": {self.email}, "progress": {self.progress}'
 
 
 class Section(Base):  # Разделы
@@ -29,7 +29,7 @@ class Section(Base):  # Разделы
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String, unique=True, nullable=False)
-    description: Mapped[str] = mapped_column(String, unique=True, nullable=False)
+    description: Mapped[str] = mapped_column(String, nullable=False)
     slug: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     topic_list: Mapped[List["Topic"]] = relationship(
         "Topic",
@@ -39,11 +39,8 @@ class Section(Base):  # Разделы
     )
     keywords: Mapped[list] = mapped_column(ARRAY(String))
 
-    def __str__(self):
-        return f"{self.id=}, {self.name=}, {self.description=}, {self.keywords=}, {self.slug=}, {self.topic_list=}"
-
     def __repr__(self):
-        return f'{"id": self.id, "name": self.name, "topic_list": self.topic_list, "description": self.description, "keywords": self.keywords, "slug": self.slug}'
+        return f'"id": {self.id}, "name": "{self.name}", "description": "{self.description}", "keywords": {self.keywords}, "slug": "{self.slug}"'
 
 
 class Topic(Base):  # Темы
@@ -60,9 +57,6 @@ class Topic(Base):  # Темы
     )
 
     keywords: Mapped[list] = mapped_column(ARRAY(String))
-
-    # def __str__(self):
-    #     return f"{self.id=}, {self.name=}, {self.content=}, {self.section_id=}, {self.keywords=}, {self.slug=}"
 
     def __repr__(self):
         return f'"id": {self.id}, "name": "{self.name}", "content": "{self.content}", "section_id": {self.section_id}, "keywords": {self.keywords}, "slug": "{self.slug}"'

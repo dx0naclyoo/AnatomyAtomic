@@ -33,14 +33,13 @@ class TopicRepository(BaseRepository):
             if topic:
                 RedisTools.set(str(slug), str(topic.__repr__()))
                 return topic
-            else:
-                return None
 
     async def get(self, topic_id):
 
         if str(topic_id) in [s.decode() for s in RedisTools.get_keys()]:
             print("by ID REDIS")
             topic = RedisTools.get(str(topic_id))
+            print(topic)
             return model.Topic.parse_raw("{" + topic + "}")
         else:
             print("by ID POSTGRESQL")
@@ -49,8 +48,6 @@ class TopicRepository(BaseRepository):
             if topic := response.scalar():
                 RedisTools.set(str(topic_id), str(topic.__repr__()))
                 return topic
-            else:
-                return None
 
     async def get_all(
         self,
