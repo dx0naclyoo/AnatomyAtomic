@@ -48,9 +48,10 @@ async def get_all_topic(
 async def create_topic(
     topic: model.TopicCreate, service: TopicService = Depends(TopicService)
 ):
-    topic.slug = slugify(topic.name)
-
-    return await service.create(topic)
+    dict_create_topic = topic.dict()
+    dict_create_topic["slug"] = slugify(dict_create_topic["name"])
+    new_topic = model.TopicCreateBackendOnly.parse_obj(dict_create_topic)
+    return await service.create(new_topic)
 
 
 @router.put("/{topic_id}")

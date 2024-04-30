@@ -9,15 +9,19 @@ class SectionBase(BaseModel):
     name: str
     keywords: List[str] = []
     description: str
-    slug: str
 
 
 class Section(SectionBase):
     id: int
+    slug: str
 
 
 class SectionCreate(SectionBase):
     pass
+
+
+class SectionCreateBackendOnly(SectionBase):
+    slug: str
 
 
 class SectionUpdate(SectionBase):

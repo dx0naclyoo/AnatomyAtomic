@@ -53,9 +53,10 @@ async def get_all_section(
 async def create_section(
     section: model.SectionCreate, service: SectionService = Depends(SectionService)
 ):
-    section.slug = slugify(section.name)
-
-    return await service.create_section(section)
+    dict_create_section = section.dict()
+    dict_create_section["slug"] = slugify(dict_create_section["name"])
+    sect = model.SectionCreateBackendOnly.parse_obj(dict_create_section)
+    return await service.create_section(sect)
 
 
 @router.put("/{section_id}")
