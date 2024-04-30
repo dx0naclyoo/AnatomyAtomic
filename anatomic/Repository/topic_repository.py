@@ -20,9 +20,10 @@ class TopicRepository(BaseRepository):
 
     async def get_by_slug(self, slug):  # Redis add
 
-        if str(slug) in [s.decode() for s in RedisTools.get_keys()]:
+        if f"topic-{slug}" in [s.decode() for s in RedisTools.get_keys()]:
             print("by Slug REDIS")
-            topic = RedisTools.get(str(slug))
+            topic = RedisTools.get(f"topic-{slug}")
+            print(topic)
             return model.Topic.parse_raw("{" + topic + "}")
         else:
             print("by ID Postgresql")
@@ -31,14 +32,14 @@ class TopicRepository(BaseRepository):
             topic = response.scalar()
 
             if topic:
-                RedisTools.set(str(slug), str(topic.__repr__()))
+                RedisTools.set(f"topic-{slug}", str(topic.__repr__()))
                 return topic
 
     async def get(self, topic_id):
 
-        if str(topic_id) in [s.decode() for s in RedisTools.get_keys()]:
+        if f"topic-{topic_id}" in [s.decode() for s in RedisTools.get_keys()]:
             print("by ID REDIS")
-            topic = RedisTools.get(str(topic_id))
+            topic = RedisTools.get(f"topic-{topic_id}")
             print(topic)
             return model.Topic.parse_raw("{" + topic + "}")
         else:
@@ -46,7 +47,7 @@ class TopicRepository(BaseRepository):
             sql = select(self.table).where(self.table.id == topic_id)
             response = await self.session.execute(sql)
             if topic := response.scalar():
-                RedisTools.set(str(topic_id), str(topic.__repr__()))
+                RedisTools.set(f"topic-{topic_id}", str(topic.__repr__()))
                 return topic
 
     async def get_all(

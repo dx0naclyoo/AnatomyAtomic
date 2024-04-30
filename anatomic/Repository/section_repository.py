@@ -16,10 +16,11 @@ class SectionRepository(BaseRepository):
 
     async def get_by_slug(self, slug):
 
-        if str(slug) in [s.decode() for s in RedisTools.get_keys()]:
+        if f"section-{slug}" in [s.decode() for s in RedisTools.get_keys()]:
             print("by Slug REDIS")
-            section = RedisTools.get(str(slug))
+            section = RedisTools.get(f"section-{slug}")
             return model.Section.parse_raw("{" + section + "}")
+
         else:
             sql = select(self.table).where(self.table.slug == slug)
             result = await self.session.execute(sql)
@@ -27,14 +28,14 @@ class SectionRepository(BaseRepository):
 
             if section:
                 print("by Slug Postgresql")
-                RedisTools.set(str(slug), str(section.__repr__()))
+                RedisTools.set(f"section-{slug}", str(section.__repr__()))
                 return section
 
     async def get(self, section_id):
 
-        if str(section_id) in [s.decode() for s in RedisTools.get_keys()]:
+        if f"section-{section_id}" in [s.decode() for s in RedisTools.get_keys()]:
             print("by ID REDIS")
-            section = RedisTools.get(str(section_id))
+            section = RedisTools.get(f"section-{section_id}")
             return model.Section.parse_raw("{" + section + "}")
         else:
             print("by ID Postgresql")
@@ -42,7 +43,7 @@ class SectionRepository(BaseRepository):
             print("1")
             result = await self.session.execute(sql)
             if section := result.scalar():
-                RedisTools.set(str(section_id), str(section.__repr__()))
+                RedisTools.set(f"section-{section_id}", str(section.__repr__()))
                 return section
 
     async def get_all(
