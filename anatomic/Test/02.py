@@ -3,8 +3,8 @@ from anatomic.Backend.Topic import model
 from anatomic import sql_tables
 
 from anatomic.Backend.Section import model
-
-asd = model.Section.parse_raw('{"id": 1, "name": string, "description": string, "keywords": [], "slug": string}')
+raw = '{"id": 10, "name": "мышцы", "description": "Раздел анатомии о мышцых человека", "keywords": ["asd", "zxc", "asd"], "slug": "myshtsy"}'
+asd = eval('"id": 6, "name": "Понятное имя", "content": "string", "section_id": 1, "keywords": [], "slug": "poniatnoe-imia"')
 print(asd)
 
 # id: int

@@ -23,8 +23,8 @@ class TopicRepository(BaseRepository):
         if f"topic-{slug}" in [s.decode() for s in RedisTools.get_keys()]:
             print("by Slug REDIS")
             topic = RedisTools.get(f"topic-{slug}")
-            print(topic)
-            return model.Topic.parse_raw("{" + topic + "}")
+            dict_obj = eval("{" + topic + "}")
+            return model.Topic.parse_obj(dict_obj)
         else:
             print("by ID Postgresql")
             sql = select(self.table).where(self.table.slug == slug)
@@ -40,8 +40,8 @@ class TopicRepository(BaseRepository):
         if f"topic-{topic_id}" in [s.decode() for s in RedisTools.get_keys()]:
             print("by ID REDIS")
             topic = RedisTools.get(f"topic-{topic_id}")
-            print(topic)
-            return model.Topic.parse_raw("{" + topic + "}")
+            dict_obj = eval("{" + topic + "}")
+            return model.Topic.parse_obj(dict_obj)
         else:
             print("by ID POSTGRESQL")
             sql = select(self.table).where(self.table.id == topic_id)

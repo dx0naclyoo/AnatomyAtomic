@@ -20,7 +20,7 @@ class SectionService:
             )
 
     async def get_section_by_id(self, section_id):
-        section = await self.section_repository.get(section_id)
+        section = await self.section_repository.get_by_id(section_id)
         if section:
             return section
         else:

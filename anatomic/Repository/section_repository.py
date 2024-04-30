@@ -14,13 +14,25 @@ class SectionRepository(BaseRepository):
         self.table = sql_tables.Section
         self.session: AsyncSession = session
 
+    async def _get(self, section_id):
+        sql = select(self.table).where(self.table.id == section_id)
+        result = await self.session.execute(sql)
+        if section := result.scalar():
+            return section
+
+    async def _get_by_name(self, name):
+        sql = select(self.table).where(self.table.name == name)
+        result = await self.session.execute(sql)
+        if section := result.scalar():
+            return section
+
     async def get_by_slug(self, slug):
 
         if f"section-{slug}" in [s.decode() for s in RedisTools.get_keys()]:
             print("by Slug REDIS")
             section = RedisTools.get(f"section-{slug}")
-            return model.Section.parse_raw("{" + section + "}")
-
+            dict_obj = eval("{" + section + "}")
+            return model.Section.parse_obj(dict_obj)
         else:
             sql = select(self.table).where(self.table.slug == slug)
             result = await self.session.execute(sql)
@@ -31,18 +43,16 @@ class SectionRepository(BaseRepository):
                 RedisTools.set(f"section-{slug}", str(section.__repr__()))
                 return section
 
-    async def get(self, section_id):
-
+    async def get_by_id(self, section_id):
         if f"section-{section_id}" in [s.decode() for s in RedisTools.get_keys()]:
             print("by ID REDIS")
             section = RedisTools.get(f"section-{section_id}")
-            return model.Section.parse_raw("{" + section + "}")
+            dict_obj = eval("{" + section + "}")
+            return model.Section.parse_obj(dict_obj)
         else:
             print("by ID Postgresql")
-            sql = select(self.table).where(self.table.id == section_id)
-            print("1")
-            result = await self.session.execute(sql)
-            if section := result.scalar():
+            section = await self._get(section_id)
+            if section:
                 RedisTools.set(f"section-{section_id}", str(section.__repr__()))
                 return section
 
@@ -61,7 +71,8 @@ class SectionRepository(BaseRepository):
         else:
             sql_section = convert_pydantic_to_sql(section, self.table)
 
-        _check = await self.get_by_slug(sql_section.slug)
+        _check = await self._get_by_name(sql_section.name)
+
         if not _check:
             self.session.add(sql_section)
             await self.session.commit()
@@ -69,7 +80,7 @@ class SectionRepository(BaseRepository):
             return sql_section
 
     async def update(self, section_id, section):
-        old_section = await self.get(section_id)
+        old_section = await self._get(section_id)
         for key, value in section.dict().items():
             setattr(old_section, key, value)
 
@@ -78,10 +89,10 @@ class SectionRepository(BaseRepository):
         return old_section
 
     async def delete(self, section_id):
-        section = await self.get(section_id)
+        section = await self._get(section_id)
 
         if section:
-            await self.session.cascade_delete(section)
+            await self.session.delete(section)
             await self.session.commit()
             return True
         else:
