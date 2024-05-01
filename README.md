@@ -15,7 +15,7 @@ SQL architecture:
 
 TABLES:
 
-![image](https://github.com/dx0naclyoo/AnatomyAtomic/assets/145878340/605a14ea-99ff-4ff6-a2aa-bb1784941d81)
+![image](https://github.com/dx0naclyoo/AnatomyAtomic/assets/145878340/985c2e23-0862-449b-91f4-70ff90f8e614)
 
 ![image](https://github.com/dx0naclyoo/AnatomyAtomic/assets/145878340/00dd88ce-dd43-438d-a3a2-92a97c9c3f12)
 
