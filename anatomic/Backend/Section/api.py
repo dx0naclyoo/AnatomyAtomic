@@ -66,7 +66,10 @@ async def update_section(
     section: model.SectionUpdate,
     service: SectionService = Depends(SectionService),
 ):
-    return await service.update_section(section_id, section)
+    dict_create_section = section.dict()
+    dict_create_section["slug"] = slugify(dict_create_section["name"])
+    sect = model.SectionUpdateBackendOnly.parse_obj(dict_create_section)
+    return await service.update_section(section_id, sect)
 
 
 @router.delete("/{section_id}")

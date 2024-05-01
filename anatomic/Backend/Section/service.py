@@ -1,4 +1,5 @@
 from fastapi import Depends, HTTPException, status
+from fastapi.responses import JSONResponse
 
 from anatomic.Repository.section_repository import SectionRepository
 from anatomic.tools import SortedMode
@@ -57,4 +58,6 @@ class SectionService:
         return await self.section_repository.update(section_id, section)
 
     async def delete_section(self, section_id):
-        return await self.section_repository.delete(section_id)
+        _check = await self.section_repository.delete(section_id)
+        if _check:
+            return JSONResponse(status_code=200, content="Успешно удалён")

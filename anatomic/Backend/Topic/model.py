@@ -19,9 +19,13 @@ class TopicCreate(TopicBase):
     pass
 
 
-class TopicCreateBackendOnly(TopicBase):
+class TopicCreateBackendOnly(TopicCreate):
     slug: str
 
 
 class TopicUpdate(TopicBase):
     pass
+
+
+class TopicTopicUpdateBackendOnly(TopicUpdate):
+    slug: str

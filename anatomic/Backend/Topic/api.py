@@ -60,7 +60,11 @@ async def update_topic(
     topic: model.TopicUpdate,
     service: TopicService = Depends(TopicService),
 ):
-    return await service.update(topic_id, topic)
+    dict_create_topic = topic.dict()
+    dict_create_topic["slug"] = slugify(dict_create_topic["name"])
+    new_topic = model.TopicTopicUpdateBackendOnly.parse_obj(dict_create_topic)
+
+    return await service.update(topic_id, new_topic)
 
 
 @router.delete("/{topic_id}")

@@ -24,6 +24,12 @@ class TopicRepository(BaseRepository):
         self.table = sql_tables.Topic
         self.session: AsyncSession = session
 
+    async def _get(self, topic_id):
+        sql = select(self.table).where(self.table.id == topic_id)
+        response = await self.session.execute(sql)
+        if topic := response.scalar():
+            return topic
+
     async def get_by_slug(self, slug):  # Redis add
 
         if f"topic-{slug}" in [s.decode() for s in RedisTools.get_keys()]:
@@ -39,18 +45,16 @@ class TopicRepository(BaseRepository):
                 RedisTools.set(f"topic-{slug}", str(topic.__repr__()))
                 return topic
 
-    async def get(self, topic_id):
+    async def get_by_id(self, topic_id):
         if f"topic-{topic_id}" in [s.decode() for s in RedisTools.get_keys()]:
             print("by ID REDIS")
             topic = RedisTools.get(f"topic-{topic_id}")
             return topic_redis_to_pydantic(topic)
         else:
-
             print("by ID POSTGRESQL")
-            sql = select(self.table).where(self.table.id == topic_id)
-            response = await self.session.execute(sql)
-            if topic := response.scalar():
-                RedisTools.set(f"topic-{topic_id}", str(topic.__repr__()))
+            topic = await self._get(topic_id)
+            RedisTools.set(f"topic-{topic_id}", str(topic.__repr__()))
+            if topic:
                 return topic
 
     async def get_all(
@@ -103,7 +107,7 @@ class TopicRepository(BaseRepository):
             )
 
     async def update(self, topic_id, topic):
-        old_topic = await self.get(topic_id)
+        old_topic = await self._get(topic_id)
         if old_topic:
             for key, value in topic.dict().items():
                 setattr(old_topic, key, value)
@@ -114,7 +118,7 @@ class TopicRepository(BaseRepository):
 
     async def delete(self, topic_id):
 
-        topic = await self.get(topic_id)
+        topic = await self._get(topic_id)
 
         if topic:
             await self.session.delete(topic)

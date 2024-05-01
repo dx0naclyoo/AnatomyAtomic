@@ -18,7 +18,7 @@ class TopicService:
             )
 
     async def get_topic_by_id(self, topic_id):
-        topic = await self.topic_repository.get(topic_id)
+        topic = await self.topic_repository.get_by_id(topic_id)
         if topic:
             return topic
         else:

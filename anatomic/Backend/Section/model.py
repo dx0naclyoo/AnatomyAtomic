@@ -26,3 +26,7 @@ class SectionCreateBackendOnly(SectionBase):
 
 class SectionUpdate(SectionBase):
     pass
+
+
+class SectionUpdateBackendOnly(SectionUpdate):
+    slug: str
