@@ -117,12 +117,18 @@ class TopicRepository(BaseRepository):
             return old_topic
 
     async def delete(self, topic_id):
-
         topic = await self._get(topic_id)
-
         if topic:
+            slug = topic.slug
             await self.session.delete(topic)
             await self.session.commit()
+
+            keys = [s.decode() for s in RedisTools.get_keys()]
+            if f"topic-{topic_id}" in keys :
+                RedisTools.delete(f"topic-{topic_id}")
+            if f"topic-{slug}" in keys:
+                RedisTools.delete(f"topic-{slug}")
+
             return True
         else:
             return False

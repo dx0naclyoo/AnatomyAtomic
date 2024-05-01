@@ -3,10 +3,10 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from anatomic import sql_tables
+from anatomic.Backend.Section import model
 from anatomic.Database.database import postgresql, RedisTools
 from anatomic.Repository.base import BaseRepository
 from anatomic.tools import SortedMode, convert_pydantic_to_sql, is_sql_table
-from anatomic.Backend.Section import model
 
 
 def section_redis_to_pydantic(section):
@@ -98,8 +98,17 @@ class SectionRepository(BaseRepository):
         section = await self._get(section_id)
 
         if section:
+            slug = section.slug
             await self.session.delete(section)
             await self.session.commit()
+
+            keys = [s.decode() for s in RedisTools.get_keys()]
+
+            if f"section-{section_id}" in keys:
+                RedisTools.delete(f"section-{section_id}")
+            if f"section-{slug}" in keys:
+                RedisTools.delete(f"section-{slug}")
+
             return True
         else:
             return False

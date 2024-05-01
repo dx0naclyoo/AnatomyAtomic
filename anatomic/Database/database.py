@@ -45,6 +45,10 @@ class RedisTools:
             return item.decode("utf-8")
 
     @classmethod
+    def delete(cls, key):
+        cls.__redis.delete(key)
+
+    @classmethod
     def get_keys(cls):
         return cls.__redis.keys(pattern="*")
 
