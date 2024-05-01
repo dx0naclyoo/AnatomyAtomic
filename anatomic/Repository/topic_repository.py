@@ -1,16 +1,22 @@
-from typing import Any
-
 from fastapi import Depends, HTTPException, status
-from pydantic import ValidationError
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from anatomic import sql_tables
+from anatomic.Backend.Topic import model
 from anatomic.Database.database import postgresql, RedisTools
 from anatomic.Repository.base import BaseRepository
 from anatomic.tools import SortedMode, is_sql_table, convert_pydantic_to_sql
-from anatomic.Backend.Topic import model
+
+
+def topic_redis_to_pydantic(topic):
+    new_str = '{' + topic.replace("\n", "=Q1") + '}'
+    dict_obj = eval(new_str)
+    top = model.Topic.parse_obj(dict_obj)
+    new_content = top.content.replace("=Q1", "\n")
+    top.content = new_content
+    return top
 
 
 class TopicRepository(BaseRepository):
@@ -23,26 +29,23 @@ class TopicRepository(BaseRepository):
         if f"topic-{slug}" in [s.decode() for s in RedisTools.get_keys()]:
             print("by Slug REDIS")
             topic = RedisTools.get(f"topic-{slug}")
-            dict_obj = eval("{" + topic + "}")
-            return model.Topic.parse_obj(dict_obj)
+            return topic_redis_to_pydantic(topic)
         else:
             print("by ID Postgresql")
             sql = select(self.table).where(self.table.slug == slug)
             response = await self.session.execute(sql)
             topic = response.scalar()
-
             if topic:
                 RedisTools.set(f"topic-{slug}", str(topic.__repr__()))
                 return topic
 
     async def get(self, topic_id):
-
         if f"topic-{topic_id}" in [s.decode() for s in RedisTools.get_keys()]:
             print("by ID REDIS")
             topic = RedisTools.get(f"topic-{topic_id}")
-            dict_obj = eval("{" + topic + "}")
-            return model.Topic.parse_obj(dict_obj)
+            return topic_redis_to_pydantic(topic)
         else:
+
             print("by ID POSTGRESQL")
             sql = select(self.table).where(self.table.id == topic_id)
             response = await self.session.execute(sql)
@@ -51,11 +54,11 @@ class TopicRepository(BaseRepository):
                 return topic
 
     async def get_all(
-        self,
-        section_id: int = None,
-        limit: int = 10,
-        offset: int = 0,
-        sorted_mode: SortedMode = SortedMode.ID,
+            self,
+            section_id: int = None,
+            limit: int = 10,
+            offset: int = 0,
+            sorted_mode: SortedMode = SortedMode.ID,
     ):
         if section_id:
             sql = (
@@ -90,7 +93,7 @@ class TopicRepository(BaseRepository):
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail="Ошибка при добавлении новой темы. "
-                    "Проверьте корректность даннных, возможно такой Секции не сущетсвует",
+                           "Проверьте корректность даннных, возможно такой Секции не сущетсвует",
                 )
             return sql_topic
 

@@ -9,6 +9,14 @@ from anatomic.tools import SortedMode, convert_pydantic_to_sql, is_sql_table
 from anatomic.Backend.Section import model
 
 
+def section_redis_to_pydantic(section):
+    new_str = '{' + section.replace("\n", "=Q1") + '}'
+    dict_obj = eval(new_str)
+    sect = model.Section.parse_obj(dict_obj)
+    sect.description = sect.description.replace("=Q1", "\n")
+    return sect
+
+
 class SectionRepository(BaseRepository):
     def __init__(self, session: AsyncSession = Depends(postgresql.get_session)):
         self.table = sql_tables.Section
@@ -31,8 +39,7 @@ class SectionRepository(BaseRepository):
         if f"section-{slug}" in [s.decode() for s in RedisTools.get_keys()]:
             print("by Slug REDIS")
             section = RedisTools.get(f"section-{slug}")
-            dict_obj = eval("{" + section + "}")
-            return model.Section.parse_obj(dict_obj)
+            return section_redis_to_pydantic(section)
         else:
             sql = select(self.table).where(self.table.slug == slug)
             result = await self.session.execute(sql)
@@ -47,8 +54,7 @@ class SectionRepository(BaseRepository):
         if f"section-{section_id}" in [s.decode() for s in RedisTools.get_keys()]:
             print("by ID REDIS")
             section = RedisTools.get(f"section-{section_id}")
-            dict_obj = eval("{" + section + "}")
-            return model.Section.parse_obj(dict_obj)
+            return section_redis_to_pydantic(section)
         else:
             print("by ID Postgresql")
             section = await self._get(section_id)

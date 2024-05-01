@@ -56,6 +56,7 @@ async def create_section(
     dict_create_section = section.dict()
     dict_create_section["slug"] = slugify(dict_create_section["name"])
     sect = model.SectionCreateBackendOnly.parse_obj(dict_create_section)
+
     return await service.create_section(sect)
 
 
