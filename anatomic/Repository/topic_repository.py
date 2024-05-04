@@ -7,7 +7,7 @@ from anatomic import sql_tables
 from anatomic.Backend.Topic import model
 from anatomic.Database.database import postgresql, RedisTools
 from anatomic.Repository.base import BaseRepository
-from anatomic.tools import SortedMode, is_sql_table, convert_pydantic_to_sql
+from anatomic.tools import SortedMode, is_sql_table
 
 
 class TopicRepository(BaseRepository):
@@ -22,7 +22,6 @@ class TopicRepository(BaseRepository):
             return topic
 
     async def get_by_slug(self, slug):  # Redis add
-
         if f"topic-{slug}" in [s.decode() for s in RedisTools.get_keys()]:
             topic = RedisTools.get(f"topic-{slug}")
             return topic_redis_to_pydantic(topic)
@@ -47,12 +46,12 @@ class TopicRepository(BaseRepository):
                 return topic
 
     async def get_all(
-            self,
-            section_id: int = None,
-            limit: int = 10,
-            offset: int = 0,
-            sorted_mode: SortedMode = SortedMode.ID,):
-
+        self,
+        section_id: int = None,
+        limit: int = 10,
+        offset: int = 0,
+        sorted_mode: SortedMode = SortedMode.ID,
+    ):
         if section_id:
             sql = (
                 select(self.table)
@@ -70,7 +69,6 @@ class TopicRepository(BaseRepository):
         return topics
 
     async def create(self, topic):
-
         if is_sql_table(topic, self.table):
             sql_topic = topic
         else:
@@ -87,7 +85,7 @@ class TopicRepository(BaseRepository):
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail="Ошибка при добавлении новой темы. "
-                           "Проверьте корректность даннных, возможно такой Секции не сущетсвует",
+                    "Проверьте корректность даннных, возможно такой Секции не сущетсвует",
                 )
             return sql_topic
 
@@ -114,7 +112,7 @@ class TopicRepository(BaseRepository):
             await self.session.commit()
 
             keys = [s.decode() for s in RedisTools.get_keys()]
-            if f"topic-{topic_id}" in keys :
+            if f"topic-{topic_id}" in keys:
                 RedisTools.delete(f"topic-{topic_id}")
             if f"topic-{slug}" in keys:
                 RedisTools.delete(f"topic-{slug}")

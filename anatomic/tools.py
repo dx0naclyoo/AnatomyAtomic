@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Any
-
-from pydantic import ValidationError
+from unittest.mock import Base
+from pydantic import ValidationError, BaseModel
 
 
 class SortedMode(str, Enum):
@@ -27,10 +27,16 @@ def is_sql_table(item: Any, table) -> bool:
         return False
 
 
-def topic_redis_to_pydantic(model, item):
-    new_str = '{' + item.replace("\n", "=Q1") + '}'
+def redis_to_pydantic(model: BaseModel, redis_item: str):
+
+    new_str = "{" + redis_item.replace("\n", "=Q1") + "}"
     dict_obj = eval(new_str)
-    it = model.parse_obj(dict_obj)
-    new_content = it.content.replace("=Q1", "\n")
-    it.content = new_content
-    return it
+    local_model = model.parse_obj(dict_obj)
+
+    for tup_key_val in local_model:
+        key, value = tup_key_val
+
+        if isinstance(value, str):
+            setattr(local_model, key, value.replace("=Q1", "\n"))
+
+    return local_model

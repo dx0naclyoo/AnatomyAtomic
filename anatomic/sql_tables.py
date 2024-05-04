@@ -50,7 +50,7 @@ class SubSection(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String, unique=True, nullable=False)
-    description: Mapped[str] = mapped_column(String, unique=True, nullable=False)
+    description: Mapped[str] = mapped_column(String, nullable=False)
     slug: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     keywords: Mapped[list] = mapped_column(ARRAY(String))
 
@@ -67,7 +67,7 @@ class SubSection(Base):
     def __repr__(self):
         return f'"id": {self.id}, "name": "{self.name}", ' \
                f'"description": "{self.description}", ' \
-               f'"slug": "{self.slug}", "keywords", {self.keywords}, "section_id": {self.section_id}'
+               f'"slug": "{self.slug}", "keywords": {self.keywords}, "section_id": {self.section_id}'
 
 
 class Topic(Base):  # Темы
