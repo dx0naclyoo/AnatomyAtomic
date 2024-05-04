@@ -91,13 +91,11 @@ class SubSectionRepository(BaseRepository):
             for key, value in subsection_new.dict().items():
                 setattr(old_subsection, key, value)
 
-            if f"subsection-{old_subsection.slug}" in [
-                s.decode() for s in RedisTools.get_keys()
-            ]:
+            keys = [s.decode() for s in RedisTools.get_keys()]
+
+            if f"subsection-{old_subsection.slug}" in keys:
                 RedisTools.delete(f"subsection-{old_subsection.slug}")
-            if f"subsection-{old_subsection.id}" in [
-                s.decode() for s in RedisTools.get_keys()
-            ]:
+            if f"subsection-{old_subsection.id}" in keys:
                 RedisTools.delete(f"subsection-{old_subsection.id}")
 
             await self.session.commit()
@@ -109,12 +107,13 @@ class SubSectionRepository(BaseRepository):
 
         if subsection:
             slug = subsection.slug
+
             await self.session.delete(subsection)
             await self.session.commit()
 
-            if f"subsection-{slug}" in [s.decode() for s in RedisTools.get_keys()]:
+            keys = [s.decode() for s in RedisTools.get_keys()]
+            if f"subsection-{slug}" in keys:
                 RedisTools.delete(f"subsection-{slug}")
-            if f"subsection-{subsection_id}" in [
-                s.decode() for s in RedisTools.get_keys()
-            ]:
+
+            if f"subsection-{subsection_id}" in keys:
                 RedisTools.delete(f"subsection-{subsection_id}")

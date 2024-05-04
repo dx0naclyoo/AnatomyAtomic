@@ -87,12 +87,22 @@ class SectionRepository(BaseRepository):
 
     async def update(self, section_id, section):
         old_section = await self._get(section_id)
-        for key, value in section.dict().items():
-            setattr(old_section, key, value)
 
-        await self.session.commit()
-        await self.session.refresh(old_section)
-        return old_section
+        if old_section:
+            slug = old_section.slug
+            keys = [s.decode() for s in RedisTools.get_keys()]
+            
+            for key, value in section.dict().items():
+                setattr(old_section, key, value)
+
+            if f"section-{section_id}" in keys:
+                RedisTools.delete(f"section-{section_id}")
+            if f"section-{slug}" in keys:
+                RedisTools.delete(f"section-{slug}")
+
+            await self.session.commit()
+            await self.session.refresh(old_section)
+            return old_section
 
     async def delete(self, section_id):
         section = await self._get(section_id)

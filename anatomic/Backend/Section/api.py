@@ -62,20 +62,21 @@ async def create_section(
     return await service.create_section(sect)
 
 
-@router.put("/{section_id}")
+@router.put("/{identifier}")
 async def update_section(
-    section_id: int,
+    identifier: str,
     section: model.SectionUpdate,
     service: SectionService = Depends(SectionService),
 ):
     dict_create_section = section.dict()
     dict_create_section["slug"] = slugify(dict_create_section["name"])
     sect = model.SectionUpdateBackendOnly.parse_obj(dict_create_section)
-    return await service.update_section(section_id, sect)
+    
+    return await service.update_section(identifier, sect)
 
 
-@router.delete("/{section_id}")
+@router.delete("/{identifier}")
 async def delete_section(
-    section_id: int, service: SectionService = Depends(SectionService)
+    identifier: str, service: SectionService = Depends(SectionService)
 ):
-    return await service.delete_section(section_id)
+    return await service.delete_section(identifier)
