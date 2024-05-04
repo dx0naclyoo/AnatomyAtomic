@@ -53,4 +53,4 @@ class SubSectionService:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="SubSection not updated")
 
     async def delete(self, subsection_id):
-        pass
+        return await self.subsection_repository.delete(subsection_id)

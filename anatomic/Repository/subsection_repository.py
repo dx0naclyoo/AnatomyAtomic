@@ -104,5 +104,17 @@ class SubSectionRepository(BaseRepository):
             await self.session.refresh(old_subsection)
             return old_subsection
 
-    async def delete(self):
-        pass
+    async def delete(self, subsection_id: int):
+        subsection = await self._get_by_id(subsection_id)
+
+        if subsection:
+            slug = subsection.slug
+            await self.session.delete(subsection)
+            await self.session.commit()
+
+            if f"subsection-{slug}" in [s.decode() for s in RedisTools.get_keys()]:
+                RedisTools.delete(f"subsection-{slug}")
+            if f"subsection-{subsection_id}" in [
+                s.decode() for s in RedisTools.get_keys()
+            ]:
+                RedisTools.delete(f"subsection-{subsection_id}")
