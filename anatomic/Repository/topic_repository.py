@@ -7,7 +7,7 @@ from anatomic import sql_tables
 from anatomic.Backend.Topic import model
 from anatomic.Database.database import postgresql, RedisTools
 from anatomic.Repository.base import BaseRepository
-from anatomic.tools import SortedMode, is_sql_table
+from anatomic.tools import SortedMode, is_sql_table, convert_pydantic_to_sql, redis_to_pydantic
 
 
 class TopicRepository(BaseRepository):
@@ -24,7 +24,7 @@ class TopicRepository(BaseRepository):
     async def get_by_slug(self, slug):  # Redis add
         if f"topic-{slug}" in [s.decode() for s in RedisTools.get_keys()]:
             topic = RedisTools.get(f"topic-{slug}")
-            return topic_redis_to_pydantic(topic)
+            return redis_to_pydantic(model=model.Topic, redis_item=topic)
         else:
             sql = select(self.table).where(self.table.slug == slug)
             response = await self.session.execute(sql)
@@ -37,7 +37,7 @@ class TopicRepository(BaseRepository):
         if f"topic-{topic_id}" in [s.decode() for s in RedisTools.get_keys()]:
             print("by ID REDIS")
             topic = RedisTools.get(f"topic-{topic_id}")
-            return topic_redis_to_pydantic(topic)
+            return redis_to_pydantic(model=model.Topic, redis_item=topic)
         else:
             print("by ID POSTGRESQL")
             topic = await self._get(topic_id)
