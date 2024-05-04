@@ -21,9 +21,9 @@ class SubSectionService:
 
     async def get_all(
         self,
-        limit: int = 10,
-        offset: int = 0,
-        section_id: int = None,
+        limit: int,
+        offset: int,
+        section_id: int,
     ):
         return await self.subsection_repository.get_all(limit=limit, offset=offset, section_id=section_id)
 
@@ -38,10 +38,7 @@ class SubSectionService:
         self, identifier: str, subsection_new: model.SubSectionUpdateBackendOnly
     ):
 
-        if identifier.isdigit():
-            old_subsection = await self.subsection_repository._get_by_id(int(identifier))
-        else:
-            old_subsection = await self.subsection_repository._get_by_slug(int(identifier))
+        old_subsection = await self.get_by_identifier(identifier)
 
         updated_subsection = await self.subsection_repository.update(
             old_subsection=old_subsection, subsection_new=subsection_new
@@ -52,5 +49,8 @@ class SubSectionService:
         else:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="SubSection not updated")
 
-    async def delete(self, subsection_id):
-        return await self.subsection_repository.delete(subsection_id)
+    async def delete(self, identifier):
+
+        subsection = await self.get_by_identifier(identifier)
+
+        return await self.subsection_repository.delete(subsection.id)

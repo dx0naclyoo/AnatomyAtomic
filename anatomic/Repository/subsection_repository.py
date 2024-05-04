@@ -52,9 +52,9 @@ class SubSectionRepository(BaseRepository):
 
     async def get_all(
         self,
-        limit: int = 10,
-        offset: int = 0,
-        section_id: int = None,
+        limit: int,
+        offset: int,
+        section_id: int,
     ):
         if section_id:
             sql = (

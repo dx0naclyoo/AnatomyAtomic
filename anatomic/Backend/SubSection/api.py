@@ -23,6 +23,8 @@ async def get_all_subsections(
     section_id: int = None,
     service: SubSectionService = Depends(SubSectionService),
 ):
+    if limit > 100:
+        limit = 100
     return await service.get_all(limit=limit, offset=offset, section_id=section_id)
 
 
@@ -54,4 +56,4 @@ async def update_subsection(
 async def delete_subsection(
         identifier: str, service:
         SubSectionService = Depends(SubSectionService)):
-    pass
+    return await service.delete(identifier)
