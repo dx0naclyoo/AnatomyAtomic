@@ -10,7 +10,9 @@ class DatabaseSettings(BaseSettings):
     postgres_url: str = os.getenv("POSTGRESQL_URL")
     echo: bool = False
     redis_url: str = os.getenv("REDIS_URL")
-    redis_default_expire: int = 3600
+    redis_default_expire: int = 300
+    redis_host: str = os.getenv("REDIS_HOST")
+    redis_port: str = os.getenv("REDIS_PORT")
 
 
 class AppSettings(BaseSettings):

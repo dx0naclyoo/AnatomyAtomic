@@ -8,7 +8,9 @@ from anatomic.tools import SortedMode
 router = APIRouter(tags=["Section"], prefix="/sections")
 
 
-@router.get("/{identifier}")
+@router.get("/{identifier}",
+            name="Получение по ID или SLUG",
+            description='Принимаются только значения string, например "1" или "subsection-slug" ')
 async def get_section_by_identifier(
     identifier: str, service: SectionService = Depends(SectionService)
 ):

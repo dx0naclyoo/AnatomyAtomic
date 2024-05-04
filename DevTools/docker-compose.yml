@@ -1,0 +1,20 @@
+services:
+  postgresql:
+    container_name: atomic_postgresql
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: database
+    ports:
+      - "5432:5432"
+
+  redis:
+    container_name: atomic_redis
+    image: redis
+    environment:
+      REDIS_USER: redis
+      REDIS_PASSWORD: redis
+      REDIS_PORT: 6379
+    ports:
+      - "6379:6379"

@@ -29,14 +29,17 @@ class Postgresql(DatabaseSQL):
 postgresql = Postgresql(url=settings.database.postgres_url, echo=settings.database.echo)
 
 
-class RedisTools:
-    __redis = redis.from_url(settings.database.redis_url)
+class RedisTools:  # Изменить на URL
+    __redis = redis.Redis(host=settings.database.redis_host, port=settings.database.redis_port)
     default_expire = settings.database.redis_default_expire
 
     @classmethod
     def set(cls, key: str, value: str):
-        cls.__redis.set(key, value)
-        cls.expire(key, cls.default_expire)
+        try:
+            cls.__redis.set(key, value)
+            cls.expire(key, cls.default_expire)
+        except Exception as e:
+            print("Error:", e)
 
     @classmethod
     def get(cls, key: str) -> str:
@@ -55,3 +58,5 @@ class RedisTools:
     @classmethod
     def expire(cls, key: str, seconds: int) -> None:
         cls.__redis.expire(key, seconds)
+
+

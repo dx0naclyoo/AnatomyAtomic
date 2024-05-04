@@ -25,3 +25,12 @@ def is_sql_table(item: Any, table) -> bool:
         return True
     else:
         return False
+
+
+def topic_redis_to_pydantic(model, item):
+    new_str = '{' + item.replace("\n", "=Q1") + '}'
+    dict_obj = eval(new_str)
+    it = model.parse_obj(dict_obj)
+    new_content = it.content.replace("=Q1", "\n")
+    it.content = new_content
+    return it

@@ -34,7 +34,7 @@ class TopicService:
         sorted_mode: SortedMode = SortedMode.ID,
     ):
         topics = await self.topic_repository.get_all(
-            limit=limit, offset=offset, sorted_mode=sorted_mode, section_id=section_id
+            limit=limit, offset=offset, sorted_mode=sorted_mode, section_id=section_id,
         )
 
         if topics:

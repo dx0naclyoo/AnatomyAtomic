@@ -10,15 +10,6 @@ from anatomic.Repository.base import BaseRepository
 from anatomic.tools import SortedMode, is_sql_table, convert_pydantic_to_sql
 
 
-def topic_redis_to_pydantic(topic):
-    new_str = '{' + topic.replace("\n", "=Q1") + '}'
-    dict_obj = eval(new_str)
-    top = model.Topic.parse_obj(dict_obj)
-    new_content = top.content.replace("=Q1", "\n")
-    top.content = new_content
-    return top
-
-
 class TopicRepository(BaseRepository):
     def __init__(self, session: AsyncSession = Depends(postgresql.get_session)):
         self.table = sql_tables.Topic
@@ -33,11 +24,9 @@ class TopicRepository(BaseRepository):
     async def get_by_slug(self, slug):  # Redis add
 
         if f"topic-{slug}" in [s.decode() for s in RedisTools.get_keys()]:
-            print("by Slug REDIS")
             topic = RedisTools.get(f"topic-{slug}")
             return topic_redis_to_pydantic(topic)
         else:
-            print("by ID Postgresql")
             sql = select(self.table).where(self.table.slug == slug)
             response = await self.session.execute(sql)
             topic = response.scalar()
@@ -62,8 +51,8 @@ class TopicRepository(BaseRepository):
             section_id: int = None,
             limit: int = 10,
             offset: int = 0,
-            sorted_mode: SortedMode = SortedMode.ID,
-    ):
+            sorted_mode: SortedMode = SortedMode.ID,):
+
         if section_id:
             sql = (
                 select(self.table)
@@ -71,6 +60,7 @@ class TopicRepository(BaseRepository):
                 .offset(offset)
                 .filter(self.table.section_id == section_id)
             )
+
         else:
             sql = select(sql_tables.Topic).limit(limit).offset(offset)
 
