@@ -30,7 +30,7 @@ postgresql = Postgresql(url=settings.database.postgres_url, echo=settings.databa
 
 
 class RedisTools:  # Изменить на URL
-    __redis = redis.Redis(host=settings.database.redis_host, port=settings.database.redis_port)
+    __redis = redis.from_url(settings.database.redis_url)
     default_expire = settings.database.redis_default_expire
 
     @classmethod
