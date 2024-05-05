@@ -49,7 +49,7 @@ class SectionService:
 
     async def create_section(self, section):
         section = await self.section_repository.create(section)
-        
+
         if section:
             return section
         else:
@@ -60,13 +60,13 @@ class SectionService:
             )
 
     async def update_section(self, identifier: str, section):
-        
-        section = await self.get_section_by_identifier(identifier)
-        
-        return await self.section_repository.update(section.id, section)
+
+        old_section = await self.get_section_by_identifier(identifier)
+
+        return await self.section_repository.update(old_section.id, section)
 
     async def delete_section(self, identifier):
-        
+
         section = await self.get_section_by_identifier(identifier)
         _check = await self.section_repository.delete(section.id)
 

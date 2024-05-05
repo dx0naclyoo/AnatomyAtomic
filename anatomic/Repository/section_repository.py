@@ -92,13 +92,13 @@ class SectionRepository(BaseRepository):
                     detail="Ошибка при добавлении. Проверьте корректность даннных",
                 )
 
-    async def update(self, section_id, section):
+    async def update(self, section_id, section: model.Section):
         old_section = await self._get(section_id)
 
         if old_section:
             slug = old_section.slug
             keys = [s.decode() for s in RedisTools.get_keys()]
-            
+
             for key, value in section.dict().items():
                 setattr(old_section, key, value)
 
