@@ -20,8 +20,26 @@ class TopicContentRepository():
     async def _get_by_id(self, content_id):
         sql = select(self.table).where(self.table.id == content_id)
         response = await self.session.execute(sql)
-        if subsection := response.scalar():
-            return subsection
+        if content := response.scalar():
+            return content
+
+    async def _get_by_topic_id(self, topic_id):
+        sql = select(self.table).where(self.table.topic_id == topic_id)
+        response = await self.session.execute(sql)
+        if content := response.scalar():
+            return content
+
+    async def get_by_topic_id(self, topic_id):
+        if f"content-topicID--{topic_id}" in [s.decode() for s in RedisTools.get_keys()]:
+            content = RedisTools.get(f"content-{topic_id}")
+            it = redis_to_pydantic(model=model.Content, redis_item=content)
+            return it
+        else:
+            content = await self._get_by_topic_id(topic_id)
+
+            if content:
+                RedisTools.set(f"content-topicID-{topic_id}", content.__repr__())
+                return content
 
     async def get(self, content_id):
 

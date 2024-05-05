@@ -11,6 +11,15 @@ class ContentService:
     ):
         self.content_repository = content_repository
 
+    async def get_by_topic_id(self, topic_id):
+        content = await self.content_repository.get_by_topic_id(topic_id)
+        if content:
+            return content
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Content not found"
+            )
+
     async def get_by_id(self, content_id):
         content = await self.content_repository.get(content_id)
         if content:
@@ -35,12 +44,12 @@ class ContentService:
 
     async def update_content(self, content_id, content):
         old_content = await self.get_by_id(content_id)
-        
+
         if content:
             return await self.content_repository.update(old_content.id, content)
 
     async def delete_content(self, content_id):
         content_for_delete = await self.get_by_id(content_id)
-        
+
         if content_for_delete:
             return await self.content_repository.delete(content_for_delete.id)

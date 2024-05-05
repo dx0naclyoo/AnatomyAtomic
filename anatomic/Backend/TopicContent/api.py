@@ -7,11 +7,11 @@ from anatomic.Backend.TopicContent.service import ContentService
 router = APIRouter(tags=["Content"], prefix="/contents")
 
 
-@router.get("/{content_id}")
-async def get_content(
-    content_id: int, service: ContentService = Depends(ContentService)
+@router.get("/{topic_id}", name="Get by Topic ID")
+async def get_content_by_content_id(
+    topic_id: int, service: ContentService = Depends(ContentService)
 ):
-    return await service.get_by_id(content_id)
+    return await service.get_by_topic_id(topic_id)
 
 
 @router.get("/")
