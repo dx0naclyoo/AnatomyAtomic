@@ -88,6 +88,7 @@ class Topic(Base):  # Темы
         back_populates="topic",
         cascade="save-update, merge, delete",
         passive_deletes=True,
+        uselist=False,
     )
 
     def __repr__(self):
