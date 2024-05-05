@@ -5,10 +5,8 @@ from pydantic import BaseModel
 
 class TopicBase(BaseModel):
     name: str
-    content: str
     keywords: List[str] = []
-    section_id: int
-
+    subsection_id: int
 
 class Topic(TopicBase):
     id: int

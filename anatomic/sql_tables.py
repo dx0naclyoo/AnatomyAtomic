@@ -89,14 +89,11 @@ class Topic(Base):  # Темы
         cascade="save-update, merge, delete",
         passive_deletes=True,
     )
-    content_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("topic_content.id", ondelete="CASCADE")
-    )
 
     def __repr__(self):
-        return f'"id": {self, id}, "name": "{self.name}", ' \
+        return f'"id": {self.id}, "name": "{self.name}", ' \
                f'"slug": "{self.slug}", "keywords": {self.keywords}, ' \
-               f'"subsection_id": {self.subsection_id}, "content_id": {self.content_id}'
+               f'"subsection_id": {self.subsection_id}'
 
 
 class TopicContent(Base):
@@ -105,10 +102,11 @@ class TopicContent(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     content: Mapped[str] = mapped_column(String)
 
+    topic_id: Mapped[int] = mapped_column(Integer, ForeignKey("topic.id", ondelete="CASCADE"))
     topic: Mapped["Topic"] = relationship(
         "Topic",
         back_populates="content",
     )
 
     def __repr__(self):
-        return f'"id": {self.id}, "content": "{self.content}"'
+        return f'"id": {self.id}, "content": "{self.content}", "topic_id": {self.topic_id}'

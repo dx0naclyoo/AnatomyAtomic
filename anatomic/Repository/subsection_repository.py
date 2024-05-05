@@ -1,6 +1,7 @@
-from fastapi import Depends
+from fastapi import Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.exc import IntegrityError
 
 from anatomic import sql_tables
 from anatomic.Backend.SubSection import model
@@ -79,9 +80,15 @@ class SubSectionRepository(BaseRepository):
         _check = await self._get_by_slug(sql_subsection.slug)
 
         if _check is None:
-            self.session.add(sql_subsection)
-            await self.session.commit()
-            await self.session.refresh(sql_subsection)
+            try:
+                self.session.add(sql_subsection)
+                await self.session.commit()
+                await self.session.refresh(sql_subsection)
+            except IntegrityError as error:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Ошибка при добавлении. Проверьте корректность даннных",
+                )
             return sql_subsection
 
     async def update(
